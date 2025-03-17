@@ -1,0 +1,51 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { createClient } from "../lib/supabase";
+import "../styles/global.css";
+
+const supabase = createClient({
+	request: Astro.request,
+	cookies: Astro.cookies,
+});
+
+const { data } = await supabase.auth.getUser();
+---
+
+<Layout>
+	<section class="flex flex-col items-center justify-center m-30">
+		<h1 class="text-4xl text-left font-bold mb-12">You are logged in!</h1>
+		<p class="mb-6">Your user Id: {data.user?.id}</p>
+		<button
+			id="sign-out"
+			class="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded-md text-white font-bold cursor-pointer disabled:bg-gray-500 disabled:hover:bg-gray-500 disabled:cursor-not-allowed"
+			>Sign Out</button
+		>
+	</section>
+</Layout>
+
+<script>
+	import { actions } from "astro:actions";
+	const signOutBtn = document.getElementById("sign-out") as HTMLButtonElement;
+
+	signOutBtn?.addEventListener("click", async (e) => {
+		e.preventDefault();
+		signOutBtn!.disabled = true;
+		signOutBtn!.textContent = "Signing out...";
+
+		try {
+			const results = await actions.signOut();
+
+			if (!results.data?.success) {
+				signOutBtn!.disabled = false;
+				signOutBtn!.textContent = "Sign Out";
+				return alert("Oops! Could not sign Out. Please try again");
+			}
+			return window.location.reload();
+		} catch (error) {
+			signOutBtn.disabled = false;
+			signOutBtn.textContent = "Sign Out";
+			console.log(error);
+			return alert("Something went wrong. Please try again");
+		}
+	});
+</script>

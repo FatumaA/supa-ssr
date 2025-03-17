@@ -1,11 +1,72 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import Layout from "../layouts/Layout.astro";
+import { createClient } from "../lib/supabase";
+import "../styles/global.css";
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const supabase = createClient({
+	request: Astro.request,
+	cookies: Astro.cookies,
+});
+
+const { data } = await supabase.auth.getUser();
+
+if (data.user) {
+	return Astro.redirect("/protected");
+}
 ---
 
 <Layout>
-	<Welcome />
+	<section class="flex flex-col items-center justify-center m-30">
+		<h1 class="text-4xl text-left font-bold mb-12">Sign In to Your Account</h1>
+		<form id="signin-form" class="flex flex-col gap-2 w-1/2">
+			<label for="email" class="">Enter your email</label>
+			<input
+				type="email"
+				name="email"
+				id="email"
+				placeholder="youremail@example.com"
+				class="border border-gray-500 rounded-md p-2"
+				required
+			/>
+			<button
+				type="submit"
+				id="sign-in"
+				class="bg-gray-600 hover:bg-gray-700 p-2 rounded-md text-white font-bold w-full cursor-pointer disabled:bg-gray-500 disabled:hover:bg-gray-500 disabled:cursor-not-allowed"
+				>Sign In</button
+			>
+		</form>
+	</section>
 </Layout>
+
+<script>
+	import { actions } from "astro:actions";
+
+	const signInForm = document.querySelector("#signin-form") as HTMLFormElement;
+	const formSubmitBtn = document.getElementById("sign-in") as HTMLButtonElement;
+
+	signInForm?.addEventListener("submit", async (e) => {
+		e.preventDefault();
+		formSubmitBtn!.disabled = true;
+		formSubmitBtn!.textContent = "Signing in...";
+
+		try {
+			const formData = new FormData(signInForm);
+
+			const results = await actions.signIn(formData);
+
+			if (!results.data?.success) {
+				formSubmitBtn.disabled = false;
+				formSubmitBtn.textContent = "Sign In";
+				return alert("Oops! Could not sign in. Please try again");
+			}
+
+			formSubmitBtn.textContent = "Sign In";
+			return alert("Please check your email to sign in");
+		} catch (error) {
+			formSubmitBtn.disabled = false;
+			formSubmitBtn.textContent = "Sign In";
+			console.log(error);
+			return alert("Something went wrong. Please try again");
+		}
+	});
+</script>
