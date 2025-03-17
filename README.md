@@ -28,4 +28,4 @@ You should see this interface:
 
 ## Blog
 
-For more information, check out my blog post on [SSR Auth with Supabase and Astro Actions](https://blog.hijabicoder.dev/how-to-add-ssr-auth-to-astro-with-supabase-and-astro-actions).
+For more information, check out my blog post on [SSR Auth with Supabase and Astro Actions](https://blog.hijabicoder.dev/how-to-add-ssr-auth-to-with-supabase-and-astro).
