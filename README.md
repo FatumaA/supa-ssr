@@ -1,48 +1,31 @@
-# Astro Starter Kit: Basics
+# SSR Auth with Supabase and Astro Actions
+
+This repository is a simple example of how to use Supabase and Astro Actions to create a secure, server-side rendered authentication flow.
+
+## Running the project
+
+To run the project, you will need to have Node.js installed on your machine. Once you have Node.js installed, you can clone this repository and run the following commands in your terminal:
 
 ```sh
-npm create astro@latest -- --template basics
+npm install
 ```
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/basics)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/basics)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/basics/devcontainer.json)
+To install the dependencies.
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+Then run:
 
-![just-the-basics](https://github.com/withastro/astro/assets/2244813/a0a5533c-a856-4198-8470-2d67b1d7c554)
-
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src/
-│   ├── layouts/
-│   │   └── Layout.astro
-│   └── pages/
-│       └── index.astro
-└── package.json
+```sh
+npm run dev
 ```
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+To start the development server.
 
-## 🧞 Commands
+The app will be available at http://localhost:4321.
 
-All commands are run from the root of the project, from a terminal:
+You should see this interface:
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+![A screenshot of the app's index page](/public/ssr-auth.png)
 
-## 👀 Want to learn more?
+## Blog
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+For more information, check out my blog post on [SSR Auth with Supabase and Astro Actions](https://blog.hijabicoder.dev/how-to-add-ssr-auth-to-astro-with-supabase-and-astro-actions).
