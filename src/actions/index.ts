@@ -5,8 +5,10 @@ import { createClient } from "../lib/supabase";
 const emailSignUp = async (
 	{
 		email,
+		captchaToken,
 	}: {
 		email: string;
+		captchaToken: string;
 	},
 	context: ActionAPIContext
 ) => {
@@ -22,6 +24,7 @@ const emailSignUp = async (
 		const { data, error } = await supabase.auth.signInWithOtp({
 			email,
 			options: {
+				captchaToken,
 				emailRedirectTo: "http://localhost:4321/api/exchange",
 			},
 		});
@@ -53,6 +56,7 @@ export const server = {
 		accept: "form",
 		input: z.object({
 			email: z.string().email(),
+			captchaToken: z.string(),
 		}),
 		handler: async (input, context) => {
 			return emailSignUp(input, context);
