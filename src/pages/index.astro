@@ -13,6 +13,8 @@ const { data } = await supabase.auth.getUser();
 if (data.user) {
 	return Astro.redirect("/protected");
 }
+
+const apiKey = import.meta.env.TURNSTILE_SITE_KEY;
 ---
 
 <Layout>
@@ -28,6 +30,7 @@ if (data.user) {
 				class="border border-gray-500 rounded-md p-2"
 				required
 			/>
+			<div class="cf-turnstile" data-sitekey={apiKey}></div>
 			<button
 				type="submit"
 				id="sign-in"
@@ -50,19 +53,37 @@ if (data.user) {
 		formSubmitBtn!.textContent = "Signing in...";
 
 		try {
+			const turnstileToken = (
+				document.querySelector(
+					"[name='cf-turnstile-response']"
+				) as HTMLInputElement
+			)?.value;
+			alert(turnstileToken);
+			if (!turnstileToken) {
+				throw new Error("verification_missing");
+			}
+
 			const formData = new FormData(signInForm);
+			formData.append("captchaToken", turnstileToken);
 
 			const results = await actions.signIn(formData);
 
 			if (!results.data?.success) {
-				formSubmitBtn.disabled = false;
-				formSubmitBtn.textContent = "Sign In";
-				return alert("Oops! Could not sign in. Please try again");
+				if (results.data?.message?.includes("captcha protection")) {
+					return alert("verification_failed");
+				} else {
+					return alert("Oops! Could not sign in. Please try again");
+				}
 			}
 
 			formSubmitBtn.textContent = "Sign In";
-			return alert("Please check your email to sign in");
+			alert("successfully signed in");
+			return (window.location.href = "/home");
 		} catch (error) {
+			if ((window as any).turnstile) {
+				(window as any).turnstile.reset();
+			}
+
 			formSubmitBtn.disabled = false;
 			formSubmitBtn.textContent = "Sign In";
 			console.log(error);
