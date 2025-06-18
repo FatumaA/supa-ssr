@@ -44,13 +44,21 @@ const apiKey = import.meta.env.TURNSTILE_SITE_KEY;
 <script>
 	import { actions } from "astro:actions";
 
+	declare global {
+		interface Window {
+			turnstile?: {
+				reset: () => void;
+			};
+		}
+	}
+
 	const signInForm = document.querySelector("#signin-form") as HTMLFormElement;
 	const formSubmitBtn = document.getElementById("sign-in") as HTMLButtonElement;
 
 	signInForm?.addEventListener("submit", async (e) => {
 		e.preventDefault();
-		formSubmitBtn!.disabled = true;
-		formSubmitBtn!.textContent = "Signing in...";
+		formSubmitBtn.disabled = true;
+		formSubmitBtn.textContent = "Signing in...";
 
 		try {
 			const turnstileToken = (
@@ -58,7 +66,7 @@ const apiKey = import.meta.env.TURNSTILE_SITE_KEY;
 					"[name='cf-turnstile-response']"
 				) as HTMLInputElement
 			)?.value;
-			alert(turnstileToken);
+
 			if (!turnstileToken) {
 				throw new Error("verification_missing");
 			}
@@ -70,24 +78,31 @@ const apiKey = import.meta.env.TURNSTILE_SITE_KEY;
 
 			if (!results.data?.success) {
 				if (results.data?.message?.includes("captcha protection")) {
-					return alert("verification_failed");
+					alert("Verification failed. Please try again.");
+					if (window.turnstile) {
+						window.turnstile.reset();
+					}
+					formSubmitBtn.disabled = false;
+					formSubmitBtn.textContent = "Sign In";
+					return;
 				} else {
-					return alert("Oops! Could not sign in. Please try again");
+					alert("Oops! Could not sign in. Please try again");
+					formSubmitBtn.disabled = false;
+					formSubmitBtn.textContent = "Sign In";
+					return;
 				}
 			}
 
 			formSubmitBtn.textContent = "Sign In";
-			alert("successfully signed in");
-			return (window.location.href = "/home");
+			alert("Please check your email to sign in");
 		} catch (error) {
-			if ((window as any).turnstile) {
-				(window as any).turnstile.reset();
+			if (window.turnstile) {
+				window.turnstile.reset();
 			}
-
 			formSubmitBtn.disabled = false;
 			formSubmitBtn.textContent = "Sign In";
 			console.log(error);
-			return alert("Something went wrong. Please try again");
+			alert("Something went wrong. Please try again");
 		}
 	});
 </script>
